@@ -113,27 +113,26 @@ vol_data <- as.data.frame(res) %>%
 cut_off_P =0.05
 cut_off_log2FC =0.585
 
-vol_data$Sig = ifelse(vol_data$padj < cut_off_P &    #根据阈值筛选差异显著的上下调基因，与差异不显著的基因
-                        abs(vol_data$log2FoldChange) >= cut_off_log2FC,  #abs绝对值
+vol_data$Sig = ifelse(vol_data$padj < cut_off_P &   
+                        abs(vol_data$log2FoldChange) >= cut_off_log2FC,  #abs
                       ifelse(vol_data$log2FoldChange > cut_off_log2FC ,'Up','Down'),'NS')
 vol_data$Sig <- factor(vol_data$Sig, levels = c('Up','NS','Down'))
 
 
 library(ggtext) # markdown text
-p_vol<-ggplot(vol_data, aes(x =log2FoldChange, y=p2, colour=Sig)) + #x、y轴取值限制，颜色根据"Sig"
-  geom_point(alpha=0.65, size=2) +  #点的透明度、大小
+p_vol<-ggplot(vol_data, aes(x =log2FoldChange, y=p2, colour=Sig)) + 
+  geom_point(alpha=0.65, size=2) +  
   scale_color_manual(values=c("#EE6100FF", "#d2dae2","#1BB6AFFF")) + 
-  #xlim(c(-8.5, 8.5)) +  #调整点的颜色和x轴的取值范围
-  #geom_vline(xintercept=c(-cut_off_log2FC, cut_off_log2FC),lty=3,col="black",lwd=0.8) + #添加x轴辅助线,lty函数调整线的类型："twodash"、"longdash"、"dotdash"、"dotted"、"dashed"、"solid"、"blank"
-  geom_hline(yintercept = -log10(cut_off_P), lty=3,col="red",lwd=0.585) +  #添加y轴辅助线
-  labs(x= 'Log~2~ fold enrichment (*S. algae* / *E. coli*)', y="--log~10~(*P*value)") +  #x、y轴标签
-  #ggtitle("单组火山图") + #标题
+  #xlim(c(-8.5, 8.5)) +
+  #geom_vline(xintercept=c(-cut_off_log2FC, cut_off_log2FC),lty=3,col="black",lwd=0.8) + 
+  geom_hline(yintercept = -log10(cut_off_P), lty=3,col="red",lwd=0.585) +  
+  labs(x= 'Log~2~ fold enrichment (*S. algae* / *E. coli*)', y="--log~10~(*P*value)") +
   theme_classic() + 
   theme(plot.title = element_text(hjust = 0.5),
         #legend.position="right", 
         legend.title = element_blank(),
         axis.title = element_markdown(size = 11),
-        #legend.justification=c(0,1), # 这个参数设置很关键
+        #legend.justification=c(0,1), 
         #legend.position =c(0,1),
         axis.text = element_text(color = 'black')
         
@@ -150,13 +149,11 @@ ggsave('DEG_vol.pdf',p_vol,height=8,width=10)
 
 
 #####=============enrichment   kobas=============================
-library(stringr)  #调整label长度
+library(stringr)  
 up_data<- read_excel('bac_deg.xlsx',sheet = 'up_plot')
 up_kegg<- filter(up_data, Database == 'KEGG PATHWAY')  
 up_biocyc<-filter(up_data, Database == 'BioCyc') 
 
-
-#把up_biocyc的description首字母大写
 library(R.utils)
 up_biocyc$Term<-capitalize(up_biocyc$Term)
 
@@ -164,54 +161,54 @@ up_biocyc$Term<-capitalize(up_biocyc$Term)
 #options(digits=1)
 #up kegg
 p.up_kegg <-ggplot(up_kegg,aes(x = GeneRatio, 
-                           y = reorder(Term,-padj),# 按照富集度大小排序
+                           y = reorder(Term,-padj),
                            size = `Input number`,
                            colour=padj,
                            #shape = go_ontology
                            )) +
   geom_point() +
-  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# 设置点的形状
-  labs(x = "GeneRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#f1766d",                              # 设置颜色范围
+  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+
+  labs(x = "GeneRatio", y = "",color='black')+           
+  scale_colour_continuous(                   
+    name="P-Value",                       
+    low="#f1766d",                            
     high="#a8cae8")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                              
+    range=c(2,4),                           
+    name="Count")+                           
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1),       
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                               
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.up_kegg
 
 #up biocyc
 p.up_biocyc <-ggplot(up_biocyc,aes(x = GeneRatio, 
-                               y = reorder(Term,-padj),# 按照富集度大小排序
+                               y = reorder(Term,-padj),
                                size = `Input number`,
                                colour=padj,
                                #shape = go_ontology
 )) +
   geom_point() +
-  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# 设置点的形状
-  labs(x = "GeneRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#f1766d",                              # 设置颜色范围
+  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+
+  labs(x = "GeneRatio", y = "",color='black')+      
+  scale_colour_continuous(                  
+    name="P-Value",                      
+    low="#f1766d",                           
     high="#a8cae8")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                           
+    range=c(2,4),                       
+    name="Count")+                      
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1),     
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                              
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+ 
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.up_biocyc
@@ -222,7 +219,7 @@ down_kegg<- filter(down_data, Database == 'KEGG PATHWAY')
 down_biocyc<-filter(down_data, Database == 'BioCyc') 
 
 
-#把down_biocyc的description首字母大写
+
 library(R.utils)
 down_biocyc$Term<-capitalize(down_biocyc$Term)
 
@@ -230,54 +227,54 @@ down_biocyc$Term<-capitalize(down_biocyc$Term)
 #options(digits=1)
 #down kegg
 p.down_kegg <-ggplot(down_kegg,aes(x = GeneRatio, 
-                               y = reorder(Term,-padj),# 按照富集度大小排序
+                               y = reorder(Term,-padj),
                                size = `Input number`,
                                colour=padj,
                                #shape = go_ontology
 )) +
   geom_point() +
-  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# 设置点的形状
-  labs(x = "GeneRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#f1766d",                              # 设置颜色范围
+  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+
+  labs(x = "GeneRatio", y = "",color='black')+         
+  scale_colour_continuous(               
+    name="P-Value",                      
+    low="#f1766d",                           
     high="#a8cae8")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                            
+    range=c(2,4),                          
+    name="Count")+                        
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1),    
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                           
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+ 
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.down_kegg
 
 #down biocyc
 p.down_biocyc <-ggplot(down_biocyc,aes(x = GeneRatio, 
-                                   y = reorder(Term,-padj),# 按照富集度大小排序
+                                   y = reorder(Term,-padj),
                                    size = `Input number`,
                                    colour=padj,
                                    #shape = go_ontology
 )) +
   geom_point() +
-  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# 设置点的形状
-  labs(x = "GeneRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#f1766d",                              # 设置颜色范围
+  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+
+  labs(x = "GeneRatio", y = "",color='black')+           
+  scale_colour_continuous(            
+    name="P-Value",               
+    low="#f1766d",                       
     high="#a8cae8")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                          
+    range=c(2,4),                           
+    name="Count")+                        
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1), 
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                      
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+ 
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.down_biocyc
@@ -296,7 +293,7 @@ library(rio)
 setwd('../bac_transcrip/')
 data<-read_excel('Table S6.xlsx',sheet = 1)
 
-#up kegg 挨个复制查找
+
 kegg<-read_excel('Table S12.xlsx',sheet = 'PWY0-381') %>% merge(data,by.x='Gene',by.y='genes',all.x = T) %>% 
 export("clipboard")
 
@@ -316,8 +313,8 @@ Heatmap(kegg2,col = c('white', '#FF0000'))
 Heatmap(biocyc2,col = c('white', '#FF0000'))
         
 
-######enrich new  eggnog 重新注释 =====================
-library(stringr)  #调整label长度
+######enrich new  eggnog  =====================
+library(stringr) 
 library(ggtext)  #markdown
 # top 10% different genes
 setwd('d:/3.bacs_omics/bac_transcrip/diff_enrich/')
@@ -370,7 +367,7 @@ go_ecoli_t10<- read_excel('diff_deg.xlsx',sheet = 'go_ecoli_plot')
 go_salgae_t10<- read_excel('diff_deg.xlsx',sheet = 'go_salgae_plot')
 #go_ecoli_t10$Class<- factor(go_ecoli_t10$Class, levels = c('BP', 'CC', 'MF'))
 #PLOT GO
-#把首字母大写
+
 library(R.utils)
 go_ecoli_t10$GO_Name<-capitalize(go_ecoli_t10$GO_Name)
 go_salgae_t10$GO_Name<-capitalize(go_salgae_t10$GO_Name)
@@ -404,7 +401,7 @@ p.go.ecoli <- ggplot(go_ecoli_t10) +
     
     plot.background = element_blank()
   )+
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 50) ) #调整label 长度
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 50) ) #璋冩暣label 闀垮害
 p.go.ecoli
 
 p.go.salgae <- ggplot(go_salgae_t10) +
@@ -431,8 +428,8 @@ p.go.salgae <- ggplot(go_salgae_t10) +
    
     plot.background = element_blank()
   )+
-  #scale_x_discrete(labels = function(x) str_wrap(x, width = 40) )+ #调整label 长度
-  scale_y_continuous(limits = c(0, 10), breaks = scales::pretty_breaks()) #坐标轴整数
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 40) )+ 
+  scale_y_continuous(limits = c(0, 10), breaks = scales::pretty_breaks())
 
 
 p.go.salgae
@@ -446,13 +443,13 @@ ggsave("diff_go.pdf", p.go_diff, width = 12, height = 9)
 #common=================================
 setwd('d:/3.bacs_omics/bac_transcrip/bac_trans_common_new/')
 
-library(stringr)  #调整label长度
+library(stringr)  #璋冩暣label闀垮害
 library(ggtext)  #markdown
 
 #top 10
 up_kegg<- read_excel('common.deg.xlsx',sheet = 'up.kegg') %>% arrange('p-value') %>% mutate(GeneRatio=GeneHitsInSelectedSet/AllGenesInSelectedSet)
 down_kegg<- read_excel('common.deg.xlsx',sheet = 'down.kegg') %>% arrange('p-value') %>% mutate(GeneRatio=GeneHitsInSelectedSet/AllGenesInSelectedSet)
-#增加gene counts
+#澧炲姞gene counts
 
 #top 10
 up_kegg<- up_kegg[1:10,]
@@ -462,24 +459,24 @@ down_kegg<-down_kegg[1:10,]
 #up
 p.kegg_up <-ggplot(up_kegg,aes(x = GeneRatio, 
                                #y = `Term Name`,
-                                y = reorder(`Term Name`,-`p-value`),# 按照富集度大小排序
+                                y = reorder(`Term Name`,-`p-value`),
                                 size = GeneHitsInSelectedSet,
                                 colour=`p-value`)) +
-  geom_point(shape = 16) +                    # 设置点的形状
-  labs(x = "GeneRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#db6968",                              # 设置颜色范围
+  geom_point(shape = 16) +                   
+  labs(x = "GeneRatio", y = "",color='black')+         
+  scale_colour_continuous(                   
+    name="P-Value",                       
+    low="#db6968",                             
     high="#0074b3")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                              
+    range=c(2,4),                         
+    name="Count")+                         
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1),       
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                                  # 璁剧疆涓婚
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #璋冩暣label 闀垮害
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.kegg_up
@@ -487,24 +484,24 @@ p.kegg_up
 
 p.kegg_down <-ggplot(down_kegg,aes(x = GeneRatio, 
                                #y = `Term Name`,
-                               y = reorder(`Term Name`,-`p-value`),# 按照富集度大小排序
+                               y = reorder(`Term Name`,-`p-value`),
                                size = GeneHitsInSelectedSet,
                                colour=`p-value`)) +
-  geom_point(shape = 16) +                    # 设置点的形状
-  labs(x = "GeneRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#db6968",                              # 设置颜色范围
+  geom_point(shape = 16) +                  
+  labs(x = "GeneRatio", y = "",color='black')+      
+  scale_colour_continuous(                 
+    name="P-Value",                      
+    low="#db6968",                          
     high="#0074b3")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                           
+    range=c(2,4),                          
+    name="Count")+                          
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1),     
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                               
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+ 
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.kegg_down
@@ -518,7 +515,6 @@ up.go<-read_excel('common.deg.xlsx',sheet = 'up.go.plot') %>% arrange('P_value')
 down.go<-read_excel('common.deg.xlsx',sheet = 'down.go.plot') %>% arrange('P_value') %>% mutate(GeneRatio=HitsGenesCountsInSelectedSet/AllGenesCountsInSelectedSet)
 
 
-#把GO的description首字母大写
 library(R.utils)
 up.go$GO_Name<-capitalize(up.go$GO_Name)
 
@@ -527,52 +523,52 @@ up.go$GO_Name<-capitalize(up.go$GO_Name)
 "#F7FBFF" "#DEEBF7" "#C6DBEF" "#9ECAE1" "#6BAED6" "#4292C6" "#2171B5" "#08519C" "#08306B"
 #options(digits=1)
 p.go.up <-ggplot(up.go,aes(x = GeneRatio, 
-                           y = reorder(GO_Name,-P_value),# 按照富集度大小排序
+                           y = reorder(GO_Name,-P_value),
                            size = HitsGenesCountsInSelectedSet,
                            colour=P_value,
                            shape = Class)) +
   geom_point() +
-  scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# 设置点的形状
-  labs(x = "GeneRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#F16913",                              # 设置颜色范围
+  scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+
+  labs(x = "GeneRatio", y = "",color='black')+          
+  scale_colour_continuous(              
+    name="P-Value",                     
+    low="#F16913",                          
     high="#6BAED6")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                          
+    range=c(2,4),                      
+    name="Count")+                      
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1),  
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                            
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+ 
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.go.up
 
 #down
 p.go.down <-ggplot(down.go,aes(x = GeneRatio, 
-                           y = reorder(GO_Name,-P_value),# 按照富集度大小排序
+                           y = reorder(GO_Name,-P_value),
                            size = HitsGenesCountsInSelectedSet,
                            colour=P_value,
                            shape = Class)) +
   geom_point() +
-  scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# 设置点的形状
-  labs(x = "GeneRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#F16913",                              # 设置颜色范围
+  scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+
+  labs(x = "GeneRatio", y = "",color='black')+       
+  scale_colour_continuous(               
+    name="P-Value",                    
+    low="#F16913",                    
     high="#6BAED6")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                            
+    range=c(2,4),                          
+    name="Count")+                         
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1),     
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                              
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.go.down
@@ -584,7 +580,7 @@ ggsave('p.go.pdf',p.go,width = 13,height = 10)
 
 #################   new name kobas ---common   =======================
 
-library(stringr)  #调整label长度
+library(stringr)  
 up_biocyc<- read_excel('./bac_trans_common_new/kobas_enrichment.xlsx',sheet = 'up_biocyc') %>% arrange(`P-Value`) %>% 
   mutate(BgRatio = Input_number/ Background_number)
 down_biocyc<- read_excel('./bac_trans_common_new/kobas_enrichment.xlsx',sheet = 'down_biocyc') %>% arrange(`P-Value`) %>% 
@@ -594,8 +590,6 @@ down_biocyc<- read_excel('./bac_trans_common_new/kobas_enrichment.xlsx',sheet = 
 up_biocyc <- up_biocyc[1:15,]
 down_biocyc <- down_biocyc[1:15,]
 
-
-#把up_biocyc的description首字母大写
 library(R.utils)
 up_biocyc$`#Term`<-capitalize(up_biocyc$`#Term`)
 down_biocyc$`#Term`<-capitalize(down_biocyc$`#Term`)
@@ -604,27 +598,27 @@ down_biocyc$`#Term`<-capitalize(down_biocyc$`#Term`)
 
 #up biocyc
 p.up_biocyc <-ggplot(up_biocyc,aes(x = BgRatio, 
-                                   y = reorder(`#Term`,-`P-Value`),# 按照富集度大小排序
+                                   y = reorder(`#Term`,-`P-Value`),
                                    size = `Input_number`,
                                    colour=`P-Value`,
                                    #shape = go_ontology
 )) +
   geom_point() +
-  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# 设置点的形状
-  labs(x = "BgRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#F16913",                              # 设置颜色范围
+  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+
+  labs(x = "BgRatio", y = "",color='black')+        
+  scale_colour_continuous(                  
+    name="P-Value",                    
+    low="#F16913",                       
     high="#6BAED6")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                           
+    range=c(2,4),                        
+    name="Count")+                        
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1),       
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                               
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+ 
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.up_biocyc
@@ -633,27 +627,27 @@ p.up_biocyc
 
 #down biocyc
 p.down_biocyc <-ggplot(down_biocyc,aes(x = BgRatio, 
-                                       y = reorder(`#Term`,-`P-Value`),# 按照富集度大小排序
+                                       y = reorder(`#Term`,-`P-Value`),
                                        size = `Input_number`,
                                        colour=`P-Value`,
                                        #shape = go_ontology
 )) +
   geom_point() +
-  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# 设置点的形状
-  labs(x = "BgRatio", y = "",color='black')+           # 设置x，y轴的名称
-  scale_colour_continuous(                    # 设置颜色图例
-    name="P-Value",                        # 图例名称
-    low="#F16913",                              # 设置颜色范围
+  #scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+
+  labs(x = "BgRatio", y = "",color='black')+       
+  scale_colour_continuous(                 
+    name="P-Value",                     
+    low="#F16913",                          
     high="#6BAED6")+
-  scale_radius(                               # 设置点大小图例
-    range=c(2,4),                             # 设置点大小的范围
-    name="Count")+                             # 图例名称
+  scale_radius(                             
+    range=c(2,4),                           
+    name="Count")+                        
   guides(   
-    color = guide_colorbar(order = 1),        # 决定图例的位置顺序
+    color = guide_colorbar(order = 1),        
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # 设置主题
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #调整label 长度
+  theme_bw()+                                 
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+ 
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.down_biocyc
@@ -672,7 +666,8 @@ setwd('d:/3.bacs_omics/bac_transcrip/bac_trans_common_new/')
 up_biocyc <- read_excel('./kobas_enrichment.xlsx', sheet = 'up_biocyc') %>% arrange(`P-Value`)
 down_biocyc <- read_excel('./kobas_enrichment.xlsx', sheet = 'down_biocyc') %>% arrange(`P-Value`)
 meta <- read_excel('./kobas_enrichment.xlsx', sheet = 'meta')
-#将重复的基因名全部分开
+
+                
 biocyc <- up_biocyc[1:15,]
 name <- read_excel("name.xlsx")
 library(tidyverse)
