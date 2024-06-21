@@ -202,7 +202,7 @@ write.csv(down_go@result,"down_go.csv")
 write.csv(up_kegg@result,"up_kegg.csv")
 write.csv(up_go@result,"up_go.csv")
 
-#∏¥÷∆µΩºÙ«–∞Â
+
 library(rio)
 export(down_kegg@result,"clipboard")
 
@@ -222,7 +222,7 @@ down_go2 <- as.data.frame(down_go) %>% merge(go_class,by='ID',all.x=T, sort = F)
 #write.csv(up_go2,"up_go2.csv")
 #write.csv(down_go2,"down_go2.csv")
 
-#∏¥÷∆µΩºÙ«–∞Â
+
 library(rio)
 export(down_go2,"clipboard")
 
@@ -235,10 +235,10 @@ p.go_up<-  dotplot(up_go2, color = "p.adjust", showCategory = 15)
 p.go_down<-dotplot(down_go, color = "p.adjust",showCategory = 15)
 
 
-#ggplot2 ªÊ÷∆£¨…œ√Êµƒ∑Ω∑®◊‹ «»± ßÕ®¬∑
+#ggplot2
 library(ggplot2)
 
-#Ω´generatio◊™Œ™ ˝◊÷
+
 mixedToFloat <- function(x){
   x <- sapply(x, as.character)
   is.integer  <- grepl("^-?\\d+$", x)
@@ -261,7 +261,7 @@ mixedToFloat <- function(x){
 ##########################################################################
 up.go<-read_excel('deseq2_results_0.3785.xlsx',sheet = 'up.go.plot')
 up.go$GeneRatio=mixedToFloat(up.go$GeneRatio) 
-#∞—GOµƒdescription ◊◊÷ƒ∏¥Û–¥
+#ÊääGOÁöÑdescriptionÈ¶ñÂ≠óÊØçÂ§ßÂÜô
 library(R.utils)
 up.go$Description<-capitalize(up.go$Description)
 
@@ -270,57 +270,57 @@ up.go$Description<-capitalize(up.go$Description)
 "#F7FBFF" "#DEEBF7" "#C6DBEF" "#9ECAE1" "#6BAED6" "#4292C6" "#2171B5" "#08519C" "#08306B"
 #options(digits=1)
 p.go.up <-ggplot(up.go,aes(x = GeneRatio, 
-              y = reorder(Description,-p.adjust),# ∞¥’’∏ªºØ∂»¥Û–°≈≈–Ú
+              y = reorder(Description,-p.adjust),#
               size = Count,
               colour=p.adjust,
               shape = go_ontology)) +
   geom_point() +
-  scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# …Ë÷√µ„µƒ–Œ◊¥
-  labs(x = "GeneRatio", y = "",color='black')+           # …Ë÷√x£¨y÷·µƒ√˚≥∆
-  scale_colour_continuous(                    # …Ë÷√—’…´Õº¿˝
-    name="P-Value",                        # Õº¿˝√˚≥∆
-    low="#F16913",                              # …Ë÷√—’…´∑∂Œß
+  scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+#
+  labs(x = "GeneRatio", y = "",color='black')+           #
+  scale_colour_continuous(                    # 
+    name="P-Value",                        #
+    low="#F16913",                              # 
     high="#6BAED6")+
-  scale_radius(                               # …Ë÷√µ„¥Û–°Õº¿˝
-    range=c(2,4),                             # …Ë÷√µ„¥Û–°µƒ∑∂Œß
-    name="Count")+                             # Õº¿˝√˚≥∆
+  scale_radius(                               # 
+    range=c(2,4),                             # 
+    name="Count")+                             # 
   guides(   
-    color = guide_colorbar(order = 1),        # æˆ∂®Õº¿˝µƒŒª÷√À≥–Ú
+    color = guide_colorbar(order = 1),        # 
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # …Ë÷√÷˜Ã‚
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #µ˜’˚label ≥§∂»
+  theme_bw()+                                  # 
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.go.up
 #go-down
 down.go<-read_excel('deseq2_results_0.3785.xlsx',sheet = 'down.go.plot')
 down.go$GeneRatio=mixedToFloat(down.go$GeneRatio)
-#∞—GOµƒdescription ◊◊÷ƒ∏¥Û–¥
+#
 library(R.utils)
 down.go$Description<-capitalize(down.go$Description)
 
 p.go.down <-ggplot(down.go,aes(x = GeneRatio, 
-                           y = reorder(Description,-p.adjust),# ∞¥’’∏ªºØ∂»¥Û–°≈≈–Ú
+                           y = reorder(Description,-p.adjust),#
                            size = Count,
                            colour=p.adjust,
                            shape = go_ontology)) +
   geom_point() +
-  scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# …Ë÷√µ„µƒ–Œ◊¥
-  labs(x = "GeneRatio", y = "",color='black')+           # …Ë÷√x£¨y÷·µƒ√˚≥∆
-  scale_colour_continuous(                    # …Ë÷√—’…´Õº¿˝
-    name="P-Value",                        # Õº¿˝√˚≥∆
-    low="#F16913",                              # …Ë÷√—’…´∑∂Œß
+  scale_shape_manual(values=c('BP'=16, 'CC'=15, 'MF' = 17))+# 
+  labs(x = "GeneRatio", y = "",color='black')+           # 
+  scale_colour_continuous(                    # 
+    name="P-Value",                        # 
+    low="#F16913",                              # 
     high="#6BAED6")+
-  scale_radius(                               # …Ë÷√µ„¥Û–°Õº¿˝
-    range=c(2,4),                             # …Ë÷√µ„¥Û–°µƒ∑∂Œß
-    name="Count")+                             # Õº¿˝√˚≥∆
+  scale_radius(                               #
+    range=c(2,4),                             # 
+    name="Count")+                             # 
   guides(   
-    color = guide_colorbar(order = 1),        # æˆ∂®Õº¿˝µƒŒª÷√À≥–Ú
+    color = guide_colorbar(order = 1),        # 
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # …Ë÷√÷˜Ã‚
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #µ˜’˚label ≥§∂»
+  theme_bw()+                                  # 
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  # 
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.go.down
@@ -335,24 +335,24 @@ up_kegg1 <- up_kegg1[order(up_kegg1$pvalue,decreasing=F),] %>% subset(pvalue<0.0
 #up_kegg2 <- up_kegg1[1:15,]
 
 p.kegg_up <-ggplot(up_kegg1,aes(x = GeneRatio, 
-                            y = reorder(Description,-p.adjust),# ∞¥’’∏ªºØ∂»¥Û–°≈≈–Ú
+                            y = reorder(Description,-p.adjust),# 
                             size = Count,
                             colour=p.adjust)) +
-  geom_point(shape = 16) +                    # …Ë÷√µ„µƒ–Œ◊¥
-  labs(x = "GeneRatio", y = "",color='black')+           # …Ë÷√x£¨y÷·µƒ√˚≥∆
-  scale_colour_continuous(                    # …Ë÷√—’…´Õº¿˝
-    name="P-Value",                        # Õº¿˝√˚≥∆
-    low="#F16913",                              # …Ë÷√—’…´∑∂Œß
+  geom_point(shape = 16) +                    # 
+  labs(x = "GeneRatio", y = "",color='black')+           # 
+  scale_colour_continuous(                    
+    name="P-Value",                        
+    low="#F16913",                            
     high="#6BAED6")+
-  scale_radius(                               # …Ë÷√µ„¥Û–°Õº¿˝
-    range=c(2,4),                             # …Ë÷√µ„¥Û–°µƒ∑∂Œß
-    name="Count")+                             # Õº¿˝√˚≥∆
+  scale_radius(                              
+    range=c(2,4),                             
+    name="Count")+                             
   guides(   
-    color = guide_colorbar(order = 1),        # æˆ∂®Õº¿˝µƒŒª÷√À≥–Ú
+    color = guide_colorbar(order = 1),        
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # …Ë÷√÷˜Ã‚
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #µ˜’˚label ≥§∂»
+  theme_bw()+                                  
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.kegg_up
@@ -363,24 +363,24 @@ down_kegg1 <- down_kegg1[order(down_kegg1$pvalue,decreasing=F),] %>% subset(pval
 #down_kegg2 <- down_kegg1[1:4,]
 
 p.kegg_down<-ggplot(down_kegg1,aes(x = GeneRatio, 
-                               y = reorder(Description,-p.adjust),# ∞¥’’∏ªºØ∂»¥Û–°≈≈–Ú
+                               y = reorder(Description,-p.adjust),
                                size = Count,
                                colour=p.adjust)) +
-  geom_point(shape = 16) +                    # …Ë÷√µ„µƒ–Œ◊¥
-  labs(x = "GeneRatio", y = "",color='black')+           # …Ë÷√x£¨y÷·µƒ√˚≥∆
-  scale_colour_continuous(                    # …Ë÷√—’…´Õº¿˝
-    name="P-Value",                        # Õº¿˝√˚≥∆
-    low="#F16913",                              # …Ë÷√—’…´∑∂Œß
+  geom_point(shape = 16) +                   
+  labs(x = "GeneRatio", y = "",color='black')+           
+  scale_colour_continuous(                    
+    name="P-Value",                        
+    low="#F16913",                             
     high="#6BAED6")+
-  scale_radius(                               # …Ë÷√µ„¥Û–°Õº¿˝
-    range=c(2,4),                             # …Ë÷√µ„¥Û–°µƒ∑∂Œß
-    name="Count")+                             # Õº¿˝√˚≥∆
+  scale_radius(                               
+    range=c(2,4),                            
+    name="Count")+                            
   guides(   
-    color = guide_colorbar(order = 1),        # æˆ∂®Õº¿˝µƒŒª÷√À≥–Ú
+    color = guide_colorbar(order = 1),       
     size = guide_legend(order = 2)
   )+
-  theme_bw()+                                  # …Ë÷√÷˜Ã‚
-  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+  #µ˜’˚label ≥§∂»
+  theme_bw()+                                 
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 40) )+
   theme(axis.text = element_text(color="black"),
         axis.text.y = element_text(size=10))
 p.kegg_down
@@ -419,7 +419,7 @@ cel04142<-read_excel('Table S3.xlsx',sheet = 'cel04142') %>% merge(data,by.x='Ge
 cel00910<-read_excel('Table S3.xlsx',sheet = 'cel00910') %>% merge(data,by.x='Gene',by.y='Geneid') %>% merge(deg,by.x='Gene',by.y='Geneid')
 write.csv(cel00910,'./down.kegg.table/cel00910.csv')
 
-#go ∞§∏ˆ∏¥÷∆≤È’“
+#go 
 GO_0005615<-read_excel('Table S5.xlsx',sheet = 'GO_0005615') %>% merge(data,by.x='Gene',by.y='Geneid') %>% merge(deg,by.x='Gene',by.y='Geneid')
 export(GO_0005615,"clipboard")
 
