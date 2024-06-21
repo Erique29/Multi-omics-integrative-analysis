@@ -89,8 +89,8 @@ vol_data<- subset(vol_data0, select=c(Compound_ID,Name,Name2, S.algae_vs_E.coli_
   mutate(p2=-log10(S.algae_vs_E.coli_Pvalue))
 cut_off_P =0.05
 cut_off_log2FC =0.585
-vol_data$Sig = ifelse(vol_data$S.algae_vs_E.coli_Pvalue < cut_off_P &    #根据阈值筛选差异显著的上下调基因，与差异不显著的基因
-                    abs(vol_data$S.algae_vs_E.coli_log2FC) >= cut_off_log2FC,  #abs绝对值
+vol_data$Sig = ifelse(vol_data$S.algae_vs_E.coli_Pvalue < cut_off_P &   
+                    abs(vol_data$S.algae_vs_E.coli_log2FC) >= cut_off_log2FC,  #abs
                   ifelse(vol_data$S.algae_vs_E.coli_log2FC > cut_off_log2FC ,'Up','Down'),'NS')
 vol_data$Sig <- factor(vol_data$Sig, levels = c('Up','NS','Down'))
 
@@ -105,19 +105,18 @@ cmplist_down<-c('Com_1846_neg', 'Com_648_neg', 'Com_13968_neg', 'Com_3415_neg', 
 cmplist_down1 <- vol_data[vol_data$Compound_ID %in% cmplist_down,]
 
 
-p_vol<-ggplot(vol_data, aes(x =S.algae_vs_E.coli_log2FC, y=p2, colour=Sig)) + #x、y轴取值限制，颜色根据"Sig"
-  geom_point(alpha=0.65, size=2) +  #点的透明度、大小
-  scale_color_manual(values=c("#EE6100FF", "#d2dae2","#1BB6AFFF")) + xlim(c(-8.5, 8.5)) +  #调整点的颜色和x轴的取值范围
-  #geom_vline(xintercept=c(-cut_off_log2FC, cut_off_log2FC),lty=3,col="black",lwd=0.8) + #添加x轴辅助线,lty函数调整线的类型："twodash"、"longdash"、"dotdash"、"dotted"、"dashed"、"solid"、"blank"
-  geom_hline(yintercept = -log10(cut_off_P), lty=3,col="red",lwd=0.5) +  #添加y轴辅助线
-  labs(x= 'Log~2~ fold enrichment (*S. algae* / *E. coli*)', y="--log~10~(*P*value)") +  #x、y轴标签
-  #ggtitle("单组火山图") + #标题
+p_vol<-ggplot(vol_data, aes(x =S.algae_vs_E.coli_log2FC, y=p2, colour=Sig)) +
+  geom_point(alpha=0.65, size=2) +  
+  scale_color_manual(values=c("#EE6100FF", "#d2dae2","#1BB6AFFF")) + xlim(c(-8.5, 8.5)) +  
+  #geom_vline(xintercept=c(-cut_off_log2FC, cut_off_log2FC),lty=3,col="black",lwd=0.8) + 
+  geom_hline(yintercept = -log10(cut_off_P), lty=3,col="red",lwd=0.5) +
+  labs(x= 'Log~2~ fold enrichment (*S. algae* / *E. coli*)', y="--log~10~(*P*value)") + 
   theme_classic() + 
   theme(plot.title = element_text(hjust = 0.5),
         #legend.position="right", 
         legend.title = element_blank(),
         axis.title = element_markdown(size = 11),
-        legend.justification=c(0,1), # 这个参数设置很关键
+        legend.justification=c(0,1), 
         legend.position =c(0,1),
         axis.text = element_text(color = 'black')
         
@@ -137,7 +136,7 @@ p_vol
 
 ggsave('vol2.pdf',p_vol,width = 8,height = 6)
 
-top_20 <- bind_rows(   #分别筛选差异显著前10个的上下调基因，并合并两组数值进行绘图
+top_20 <- bind_rows(   
   vol_data %>%
     filter(Sig == 'Up') %>%
     arrange(desc(abs(S.algae_vs_E.coli_log2FC))) %>%
@@ -147,8 +146,8 @@ top_20 <- bind_rows(   #分别筛选差异显著前10个的上下调基因，并合并两组数值进行绘
     arrange(desc(abs(S.algae_vs_E.coli_log2FC))) %>%
     head(10))
 
-top_20 %>% gt()  #将数据制成表
-#绘图——添加基因标签框图#
+top_20 %>% gt()  
+
 p_vol +
   geom_label_repel(data = top_20,
                    aes(S.algae_vs_E.coli_log2FC, p2, label = Name), size = 3, fill="#CCFFFF"
@@ -246,7 +245,7 @@ up_data <- up_data %>%
   arrange(desc(Class_I)) %>%
   mutate(prop = count / sum(up_data$count) *100)%>%
   mutate(ypos = cumsum(prop)- 0.5*prop )
-#两位小数
+
 up_data$prop<- round(up_data$prop, 2)
 
 #coloyr
@@ -274,7 +273,7 @@ down_data <- down_data %>%
   arrange(desc(Class_I)) %>%
   mutate(prop = count / sum(down_data$count) *100)%>%
   mutate(ypos = cumsum(prop)- 0.5*prop )
-#两位小数
+#涓や綅灏忔暟
 down_data$prop<- round(down_data$prop, 2)
 
 #coloyr
